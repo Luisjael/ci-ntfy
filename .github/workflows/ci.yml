@@ -1,0 +1,19 @@
+name: CI - Notificación de Push
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enviar notificación a ntfy.sh
+        run: |
+          curl -X POST https://ntfy.sh/itla \
+            -H "Title: 🚀 Nuevo Push en ${{ github.repository }}" \
+            -H "Priority: default" \
+            -H "Tags: github,push" \
+            -d "Push realizado por ${{ github.actor }} en la rama ${{ github.ref_name }}. Commit: ${{ github.sha }}"
