@@ -6,8 +6,45 @@ on:
       - '**'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Crear programa hola mundo
+        run: |
+          cat > hola_mundo.py << 'PYEOF'
+          def hola_mundo():
+              return "Hola Mundo!"
+          PYEOF
+
+      - name: Crear prueba unitaria
+        run: |
+          cat > test_hola_mundo.py << 'PYEOF'
+          import unittest
+          from hola_mundo import hola_mundo
+
+          class TestHolaMundo(unittest.TestCase):
+              def test_retorna_hola_mundo(self):
+                  self.assertEqual(hola_mundo(), "Hola Mundo!")
+
+          if __name__ == '__main__':
+              unittest.main()
+          PYEOF
+
+      - name: Ejecutar pruebas unitarias
+        run: python -m unittest test_hola_mundo.py -v
+
   notify:
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Enviar notificación a ntfy.sh
